@@ -1,0 +1,33 @@
+# =============================================================================
+# Truly Rule Engine - Docker Compose (SQLite Only)
+# =============================================================================
+# Quick start:
+#   docker-compose up -d
+#
+# Access at: http://localhost:3000
+# =============================================================================
+
+services:
+  truly:
+    build: .
+    image: truly/rule-engine:latest
+    container_name: truly
+    ports:
+      - "3000:80"
+    environment:
+      - SPRING_PROFILES_ACTIVE=sqlite
+      - SQLITE_PATH=/data/ruleengine.db
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    volumes:
+      - truly-data:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:80/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  truly-data:
+    name: truly-data

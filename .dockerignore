@@ -1,0 +1,54 @@
+# =============================================================================
+# .dockerignore - Exclude files from Docker build context
+# =============================================================================
+
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Build artifacts
+**/target/
+**/node_modules/
+**/dist/
+**/.next/
+
+# Logs
+*.log
+logs/
+
+# Test results
+**/test-results/
+**/playwright-report/
+**/coverage/
+
+# Local development
+.env
+.env.local
+.env.*.local
+*.db
+*.sqlite
+
+# Documentation (not needed in image)
+docs/
+*.md
+!README.md
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# Docker files (avoid recursive copy)
+docker-compose*.yml
+Dockerfile.*
+
+# Website (marketing site, not the app)
+website/

@@ -1,0 +1,759 @@
+{
+    "projects": [
+        {
+            "name": "Fraud Detection",
+            "description": "Real-time fraud scoring and detection rules for financial transactions. Evaluates transaction patterns, user behavior, and risk indicators.",
+            "inputSchemas": [
+                {
+                    "name": "TransactionContext",
+                    "description": "Transaction and user context for fraud evaluation",
+                    "schemaType": "INPUT",
+                    "group": "fraud",
+                    "schemaDefinition": {
+                        "type": "object",
+                        "properties": {
+                            "transactionId": {
+                                "type": "string",
+                                "description": "Unique transaction identifier"
+                            },
+                            "amount": {
+                                "type": "number",
+                                "description": "Transaction amount in USD"
+                            },
+                            "currency": {
+                                "type": "string",
+                                "description": "Currency code (e.g., USD, EUR)"
+                            },
+                            "merchantCategory": {
+                                "type": "string",
+                                "description": "MCC code or category"
+                            },
+                            "merchantCountry": {
+                                "type": "string",
+                                "description": "Country where merchant is located"
+                            },
+                            "userCountry": {
+                                "type": "string",
+                                "description": "User's registered country"
+                            },
+                            "isNewMerchant": {
+                                "type": "boolean",
+                                "description": "First transaction with this merchant"
+                            },
+                            "isInternational": {
+                                "type": "boolean",
+                                "description": "Cross-border transaction"
+                            },
+                            "deviceFingerprint": {
+                                "type": "string",
+                                "description": "Device identifier hash"
+                            },
+                            "ipAddress": {
+                                "type": "string",
+                                "description": "User's IP address"
+                            },
+                            "hourOfDay": {
+                                "type": "integer",
+                                "description": "Hour of transaction (0-23)"
+                            },
+                            "dayOfWeek": {
+                                "type": "integer",
+                                "description": "Day of week (1-7)"
+                            },
+                            "userAccountAge": {
+                                "type": "integer",
+                                "description": "Account age in days"
+                            },
+                            "previousDeclines": {
+                                "type": "integer",
+                                "description": "Recent decline count in 24h"
+                            },
+                            "velocityLast24h": {
+                                "type": "number",
+                                "description": "Transaction count in 24 hours"
+                            },
+                            "averageTransactionAmount": {
+                                "type": "number",
+                                "description": "User's average transaction"
+                            }
+                        },
+                        "required": [
+                            "transactionId",
+                            "amount",
+                            "merchantCategory"
+                        ]
+                    }
+                }
+            ],
+            "outputSchemas": [
+                {
+                    "name": "FraudDecision",
+                    "description": "Fraud evaluation result with score and recommended action",
+                    "schemaType": "OUTPUT",
+                    "group": "fraud",
+                    "schemaDefinition": {
+                        "type": "object",
+                        "properties": {
+                            "fraudScore": {
+                                "type": "integer",
+                                "description": "Risk score 0-100"
+                            },
+                            "decision": {
+                                "type": "string",
+                                "enum": [
+                                    "APPROVE",
+                                    "REVIEW",
+                                    "DECLINE"
+                                ],
+                                "description": "Recommended action"
+                            },
+                            "riskLevel": {
+                                "type": "string",
+                                "enum": [
+                                    "LOW",
+                                    "MEDIUM",
+                                    "HIGH",
+                                    "CRITICAL"
+                                ],
+                                "description": "Risk classification"
+                            },
+                            "triggeredRules": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "description": "Rules that contributed to the score"
+                            },
+                            "reviewReasons": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "description": "Human-readable reasons for review"
+                            },
+                            "requires3DS": {
+                                "type": "boolean",
+                                "description": "Whether to require 3D Secure"
+                            }
+                        }
+                    }
+                }
+            ],
+            "rules": [
+                {
+                    "name": "High Amount International Transaction",
+                    "description": "Flag large international transactions for review",
+                    "priority": 10,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "amount",
+                                "operator": "GREATER_THAN",
+                                "value": 5000
+                            },
+                            {
+                                "field": "isInternational",
+                                "operator": "EQUALS",
+                                "value": true
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "SET_VALUE",
+                            "field": "riskLevel",
+                            "value": "HIGH"
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "reviewReasons",
+                            "value": "Large international transaction"
+                        },
+                        {
+                            "type": "INCREMENT",
+                            "field": "fraudScore",
+                            "value": 35
+                        }
+                    ]
+                },
+                {
+                    "name": "Unusual Hour Activity",
+                    "description": "Flag transactions during unusual hours (2am-5am)",
+                    "priority": 20,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "hourOfDay",
+                                "operator": "GREATER_THAN_OR_EQUAL",
+                                "value": 2
+                            },
+                            {
+                                "field": "hourOfDay",
+                                "operator": "LESS_THAN",
+                                "value": 5
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "INCREMENT",
+                            "field": "fraudScore",
+                            "value": 15
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "reviewReasons",
+                            "value": "Transaction during unusual hours"
+                        }
+                    ]
+                },
+                {
+                    "name": "New Account High Value",
+                    "description": "New accounts with high-value transactions",
+                    "priority": 15,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "userAccountAge",
+                                "operator": "LESS_THAN",
+                                "value": 30
+                            },
+                            {
+                                "field": "amount",
+                                "operator": "GREATER_THAN",
+                                "value": 1000
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "INCREMENT",
+                            "field": "fraudScore",
+                            "value": 25
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "reviewReasons",
+                            "value": "New account with high-value transaction"
+                        },
+                        {
+                            "type": "SET_VALUE",
+                            "field": "requires3DS",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity Check",
+                    "description": "Multiple transactions in short period",
+                    "priority": 5,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "velocityLast24h",
+                                "operator": "GREATER_THAN",
+                                "value": 10
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "INCREMENT",
+                            "field": "fraudScore",
+                            "value": 30
+                        },
+                        {
+                            "type": "SET_VALUE",
+                            "field": "riskLevel",
+                            "value": "HIGH"
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "reviewReasons",
+                            "value": "High transaction velocity detected"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Loan Approval",
+            "description": "Automated loan application evaluation based on credit score, income, employment, and debt-to-income ratio.",
+            "inputSchemas": [
+                {
+                    "name": "LoanApplication",
+                    "description": "Loan application details and applicant information",
+                    "schemaType": "INPUT",
+                    "group": "lending",
+                    "schemaDefinition": {
+                        "type": "object",
+                        "properties": {
+                            "applicationId": {
+                                "type": "string"
+                            },
+                            "requestedAmount": {
+                                "type": "number",
+                                "description": "Loan amount requested"
+                            },
+                            "loanPurpose": {
+                                "type": "string",
+                                "enum": [
+                                    "HOME",
+                                    "AUTO",
+                                    "PERSONAL",
+                                    "EDUCATION",
+                                    "BUSINESS"
+                                ]
+                            },
+                            "loanTermMonths": {
+                                "type": "integer",
+                                "description": "Loan term in months"
+                            },
+                            "creditScore": {
+                                "type": "integer",
+                                "description": "FICO score (300-850)"
+                            },
+                            "annualIncome": {
+                                "type": "number",
+                                "description": "Gross annual income"
+                            },
+                            "employmentStatus": {
+                                "type": "string",
+                                "enum": [
+                                    "EMPLOYED",
+                                    "SELF_EMPLOYED",
+                                    "UNEMPLOYED",
+                                    "RETIRED"
+                                ]
+                            },
+                            "employmentYears": {
+                                "type": "number",
+                                "description": "Years at current employer"
+                            },
+                            "existingDebt": {
+                                "type": "number",
+                                "description": "Total existing debt"
+                            },
+                            "monthlyExpenses": {
+                                "type": "number",
+                                "description": "Monthly fixed expenses"
+                            },
+                            "hasCollateral": {
+                                "type": "boolean"
+                            },
+                            "bankruptcyHistory": {
+                                "type": "boolean"
+                            },
+                            "applicantAge": {
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "applicationId",
+                            "requestedAmount",
+                            "creditScore",
+                            "annualIncome"
+                        ]
+                    }
+                }
+            ],
+            "outputSchemas": [
+                {
+                    "name": "LoanDecision",
+                    "description": "Loan approval decision with terms",
+                    "schemaType": "OUTPUT",
+                    "group": "lending",
+                    "schemaDefinition": {
+                        "type": "object",
+                        "properties": {
+                            "decision": {
+                                "type": "string",
+                                "enum": [
+                                    "APPROVED",
+                                    "CONDITIONALLY_APPROVED",
+                                    "DECLINED",
+                                    "MANUAL_REVIEW"
+                                ]
+                            },
+                            "approvedAmount": {
+                                "type": "number"
+                            },
+                            "interestRate": {
+                                "type": "number",
+                                "description": "APR percentage"
+                            },
+                            "monthlyPayment": {
+                                "type": "number"
+                            },
+                            "riskTier": {
+                                "type": "string",
+                                "enum": [
+                                    "PRIME",
+                                    "NEAR_PRIME",
+                                    "SUBPRIME"
+                                ]
+                            },
+                            "declineReasons": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "requiredDocuments": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "rules": [
+                {
+                    "name": "Excellent Credit Auto-Approve",
+                    "description": "Auto-approve excellent credit applicants with stable income",
+                    "priority": 1,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "creditScore",
+                                "operator": "GREATER_THAN_OR_EQUAL",
+                                "value": 750
+                            },
+                            {
+                                "field": "employmentYears",
+                                "operator": "GREATER_THAN_OR_EQUAL",
+                                "value": 2
+                            },
+                            {
+                                "field": "bankruptcyHistory",
+                                "operator": "EQUALS",
+                                "value": false
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "SET_VALUE",
+                            "field": "decision",
+                            "value": "APPROVED"
+                        },
+                        {
+                            "type": "SET_VALUE",
+                            "field": "riskTier",
+                            "value": "PRIME"
+                        },
+                        {
+                            "type": "SET_VALUE",
+                            "field": "interestRate",
+                            "value": 5.99
+                        }
+                    ]
+                },
+                {
+                    "name": "Low Credit Score Decline",
+                    "description": "Decline applications with very low credit scores",
+                    "priority": 5,
+                    "isActive": true,
+                    "conditions": {
+                        "any": [
+                            {
+                                "field": "creditScore",
+                                "operator": "LESS_THAN",
+                                "value": 500
+                            },
+                            {
+                                "all": [
+                                    {
+                                        "field": "creditScore",
+                                        "operator": "LESS_THAN",
+                                        "value": 580
+                                    },
+                                    {
+                                        "field": "bankruptcyHistory",
+                                        "operator": "EQUALS",
+                                        "value": true
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "SET_VALUE",
+                            "field": "decision",
+                            "value": "DECLINED"
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "declineReasons",
+                            "value": "Credit score below minimum threshold"
+                        }
+                    ]
+                },
+                {
+                    "name": "High DTI Manual Review",
+                    "description": "Send high debt-to-income ratio applications for manual review",
+                    "priority": 10,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "existingDebt",
+                                "operator": "GREATER_THAN",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "SET_VALUE",
+                            "field": "decision",
+                            "value": "MANUAL_REVIEW"
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "requiredDocuments",
+                            "value": "Proof of income"
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "requiredDocuments",
+                            "value": "Bank statements (3 months)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Insurance Claims",
+            "description": "Auto-adjudication of insurance claims based on policy coverage, claim amount, and fraud indicators.",
+            "inputSchemas": [
+                {
+                    "name": "ClaimRequest",
+                    "description": "Insurance claim details",
+                    "schemaType": "INPUT",
+                    "group": "insurance",
+                    "schemaDefinition": {
+                        "type": "object",
+                        "properties": {
+                            "claimId": {
+                                "type": "string"
+                            },
+                            "policyNumber": {
+                                "type": "string"
+                            },
+                            "claimType": {
+                                "type": "string",
+                                "enum": [
+                                    "AUTO",
+                                    "HOME",
+                                    "HEALTH",
+                                    "LIFE",
+                                    "TRAVEL"
+                                ]
+                            },
+                            "claimAmount": {
+                                "type": "number"
+                            },
+                            "incidentDate": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "reportedDate": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "policyStartDate": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "coverageLimit": {
+                                "type": "number"
+                            },
+                            "deductible": {
+                                "type": "number"
+                            },
+                            "previousClaimsCount": {
+                                "type": "integer"
+                            },
+                            "previousClaimsTotal": {
+                                "type": "number"
+                            },
+                            "hasPoliceReport": {
+                                "type": "boolean"
+                            },
+                            "hasWitnesses": {
+                                "type": "boolean"
+                            },
+                            "claimDescription": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "claimId",
+                            "policyNumber",
+                            "claimType",
+                            "claimAmount"
+                        ]
+                    }
+                }
+            ],
+            "outputSchemas": [
+                {
+                    "name": "ClaimDecision",
+                    "description": "Claim adjudication result",
+                    "schemaType": "OUTPUT",
+                    "group": "insurance",
+                    "schemaDefinition": {
+                        "type": "object",
+                        "properties": {
+                            "decision": {
+                                "type": "string",
+                                "enum": [
+                                    "APPROVED",
+                                    "PARTIALLY_APPROVED",
+                                    "DENIED",
+                                    "INVESTIGATION_REQUIRED"
+                                ]
+                            },
+                            "approvedAmount": {
+                                "type": "number"
+                            },
+                            "denialReasons": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "fraudScore": {
+                                "type": "integer"
+                            },
+                            "requiresInvestigation": {
+                                "type": "boolean"
+                            },
+                            "investigationReasons": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "paymentMethod": {
+                                "type": "string",
+                                "enum": [
+                                    "DIRECT_DEPOSIT",
+                                    "CHECK",
+                                    "REPAIR_NETWORK"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ],
+            "rules": [
+                {
+                    "name": "Small Claim Auto-Approve",
+                    "description": "Auto-approve small claims under deductible threshold",
+                    "priority": 1,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "claimAmount",
+                                "operator": "LESS_THAN_OR_EQUAL",
+                                "value": 1000
+                            },
+                            {
+                                "field": "previousClaimsCount",
+                                "operator": "LESS_THAN",
+                                "value": 3
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "SET_VALUE",
+                            "field": "decision",
+                            "value": "APPROVED"
+                        },
+                        {
+                            "type": "SET_VALUE",
+                            "field": "paymentMethod",
+                            "value": "DIRECT_DEPOSIT"
+                        }
+                    ]
+                },
+                {
+                    "name": "Exceeds Coverage Limit",
+                    "description": "Partially approve claims exceeding coverage",
+                    "priority": 5,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "claimAmount",
+                                "operator": "GREATER_THAN",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "SET_VALUE",
+                            "field": "decision",
+                            "value": "PARTIALLY_APPROVED"
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "denialReasons",
+                            "value": "Claim amount exceeds policy coverage limit"
+                        }
+                    ]
+                },
+                {
+                    "name": "Multiple Recent Claims Investigation",
+                    "description": "Flag accounts with many recent claims",
+                    "priority": 10,
+                    "isActive": true,
+                    "conditions": {
+                        "all": [
+                            {
+                                "field": "previousClaimsCount",
+                                "operator": "GREATER_THAN_OR_EQUAL",
+                                "value": 5
+                            }
+                        ]
+                    },
+                    "actions": [
+                        {
+                            "type": "SET_VALUE",
+                            "field": "decision",
+                            "value": "INVESTIGATION_REQUIRED"
+                        },
+                        {
+                            "type": "SET_VALUE",
+                            "field": "requiresInvestigation",
+                            "value": true
+                        },
+                        {
+                            "type": "ADD_TO_LIST",
+                            "field": "investigationReasons",
+                            "value": "High frequency of claims on this policy"
+                        },
+                        {
+                            "type": "INCREMENT",
+                            "field": "fraudScore",
+                            "value": 40
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

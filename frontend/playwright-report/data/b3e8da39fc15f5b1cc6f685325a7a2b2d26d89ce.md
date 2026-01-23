@@ -1,0 +1,122 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e7]
+      - generic [ref=e11]: Rule Engine
+    - navigation [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]: Automate
+        - link "Schemas" [ref=e15] [cursor=pointer]:
+          - /url: /
+          - img [ref=e16]
+          - generic [ref=e20]: Schemas
+        - link "Projects" [ref=e21] [cursor=pointer]:
+          - /url: /projects
+          - img [ref=e22]
+          - generic [ref=e24]: Projects
+        - link "Global Rules" [ref=e25] [cursor=pointer]:
+          - /url: /rules
+          - img [ref=e26]
+          - generic [ref=e30]: Global Rules
+        - link "Execution" [ref=e31] [cursor=pointer]:
+          - /url: /execute
+          - img [ref=e32]
+          - generic [ref=e34]: Execution
+      - generic [ref=e35]:
+        - generic [ref=e36]: General
+        - link "Audit Log" [ref=e37] [cursor=pointer]:
+          - /url: /history
+          - img [ref=e38]
+          - generic [ref=e42]: Audit Log
+        - link "Settings" [ref=e43] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e44]
+          - generic [ref=e47]: Settings
+    - generic [ref=e48]:
+      - link "System Help" [ref=e49] [cursor=pointer]:
+        - /url: /help
+        - img [ref=e50]
+        - generic [ref=e53]: System Help
+      - generic [ref=e54]: v1.2.0
+  - main [ref=e55]:
+    - generic [ref=e56]:
+      - button "Workspace / Automations" [ref=e58] [cursor=pointer]
+      - generic [ref=e61]: AP
+    - generic [ref=e63]:
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - heading "Projects" [level=1] [ref=e66]
+          - paragraph [ref=e67]: Manage rule collections with defined contracts
+        - button "New Project" [ref=e68] [cursor=pointer]:
+          - img [ref=e69]
+          - text: New Project
+      - generic [ref=e70]:
+        - 'link "test No description provided Input: Order Output: ApiResponse 2 Rules Updated 12/30/2025" [ref=e71] [cursor=pointer]':
+          - /url: /projects/1
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - img [ref=e75]
+              - button [ref=e77]:
+                - img [ref=e78]
+            - heading "test" [level=3] [ref=e81]
+            - paragraph [ref=e82]: No description provided
+            - generic [ref=e83]:
+              - generic [ref=e84]:
+                - text: "Input:"
+                - generic [ref=e86]: Order
+              - generic [ref=e87]:
+                - text: "Output:"
+                - generic [ref=e89]: ApiResponse
+            - generic [ref=e90]:
+              - generic [ref=e91]:
+                - img [ref=e92]
+                - text: 2 Rules
+              - generic [ref=e94]: Updated 12/30/2025
+        - 'link "Fraud score No description provided Input: Pet Output: ApiResponse 1 Rules Updated 12/30/2025" [ref=e95] [cursor=pointer]':
+          - /url: /projects/2
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - img [ref=e99]
+              - button [ref=e101]:
+                - img [ref=e102]
+            - heading "Fraud score" [level=3] [ref=e105]
+            - paragraph [ref=e106]: No description provided
+            - generic [ref=e107]:
+              - generic [ref=e108]:
+                - text: "Input:"
+                - generic [ref=e110]: Pet
+              - generic [ref=e111]:
+                - text: "Output:"
+                - generic [ref=e113]: ApiResponse
+            - generic [ref=e114]:
+              - generic [ref=e115]:
+                - img [ref=e116]
+                - text: 1 Rules
+              - generic [ref=e118]: Updated 12/30/2025
+        - 'link "Fraud Check No description provided Input: RiskScore Transaction Output: ApiResponse 1 Rules Updated 12/31/2025" [ref=e119] [cursor=pointer]':
+          - /url: /projects/3
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - img [ref=e123]
+              - button [ref=e125]:
+                - img [ref=e126]
+            - heading "Fraud Check" [level=3] [ref=e129]
+            - paragraph [ref=e130]: No description provided
+            - generic [ref=e131]:
+              - generic [ref=e132]:
+                - text: "Input:"
+                - generic [ref=e133]:
+                  - generic [ref=e134]: RiskScore
+                  - generic [ref=e135]: Transaction
+              - generic [ref=e136]:
+                - text: "Output:"
+                - generic [ref=e138]: ApiResponse
+            - generic [ref=e139]:
+              - generic [ref=e140]:
+                - img [ref=e141]
+                - text: 1 Rules
+              - generic [ref=e143]: Updated 12/31/2025
+```

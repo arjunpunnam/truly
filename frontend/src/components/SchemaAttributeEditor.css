@@ -1,0 +1,448 @@
+/* Schema Attribute Editor Styles */
+.schema-attribute-editor {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+}
+
+.schema-attribute-editor h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Attribute Table */
+.schema-attribute-editor table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--space-md);
+}
+
+.schema-attribute-editor thead tr {
+    border-bottom: 2px solid var(--border-color);
+}
+
+.schema-attribute-editor th {
+    text-align: left;
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.schema-attribute-editor th:last-child {
+    text-align: right;
+}
+
+.schema-attribute-editor tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background var(--transition-fast);
+}
+
+.schema-attribute-editor tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.schema-attribute-editor td {
+    padding: var(--space-sm) var(--space-md);
+    vertical-align: middle;
+}
+
+/* Attribute Name Cell */
+.schema-attribute-editor .attr-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.875rem;
+}
+
+/* Type Badge */
+.schema-attribute-editor .type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.schema-attribute-editor .type-badge.string {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.schema-attribute-editor .type-badge.number,
+.schema-attribute-editor .type-badge.integer {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+}
+
+.schema-attribute-editor .type-badge.boolean {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.schema-attribute-editor .type-badge.array {
+    background: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+}
+
+.schema-attribute-editor .type-badge.object {
+    background: rgba(236, 72, 153, 0.15);
+    color: #f472b6;
+}
+
+/* Description Cell */
+.schema-attribute-editor .attr-description {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Required Indicator */
+.schema-attribute-editor .required-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+}
+
+.schema-attribute-editor .required-badge.yes {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.schema-attribute-editor .required-badge.no {
+    color: var(--text-muted);
+}
+
+/* Action Buttons */
+.schema-attribute-editor .action-btns {
+    display: flex;
+    gap: var(--space-xs);
+    justify-content: flex-end;
+}
+
+.schema-attribute-editor .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.schema-attribute-editor .action-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.schema-attribute-editor .action-btn.edit {
+    color: var(--accent-primary);
+}
+
+.schema-attribute-editor .action-btn.edit:hover {
+    background: rgba(99, 102, 241, 0.15);
+}
+
+.schema-attribute-editor .action-btn.delete {
+    color: var(--text-muted);
+}
+
+.schema-attribute-editor .action-btn.delete:hover {
+    color: var(--error);
+    background: rgba(239, 68, 68, 0.15);
+}
+
+/* Add Form */
+.schema-attribute-editor .add-form {
+    margin-bottom: var(--space-lg);
+    padding: var(--space-lg);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.schema-attribute-editor .add-form h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-md) 0;
+}
+
+.schema-attribute-editor .add-form .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr auto;
+    gap: var(--space-md);
+    align-items: end;
+}
+
+@media (max-width: 768px) {
+    .schema-attribute-editor .add-form .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.schema-attribute-editor .add-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.schema-attribute-editor .add-form label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.schema-attribute-editor .add-form input,
+.schema-attribute-editor .add-form select {
+    height: 36px;
+    padding: 0 var(--space-sm);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    transition: border-color var(--transition-fast);
+}
+
+.schema-attribute-editor .add-form input:focus,
+.schema-attribute-editor .add-form select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.schema-attribute-editor .add-form .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    height: 36px;
+}
+
+.schema-attribute-editor .add-form .checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.schema-attribute-editor .add-form .checkbox-group label {
+    text-transform: none;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.schema-attribute-editor .add-form .form-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+/* Edit Row */
+.schema-attribute-editor .edit-row input,
+.schema-attribute-editor .edit-row select {
+    height: 32px;
+    padding: 0 var(--space-xs);
+    background: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.8125rem;
+    width: 100%;
+}
+
+/* Impact Modal Enhancements */
+.schema-impact-modal {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    padding: var(--space-xl);
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.schema-impact-modal .modal-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.schema-impact-modal .modal-header .icon-wrapper {
+    padding: var(--space-sm);
+    background: rgba(250, 204, 21, 0.15);
+    border-radius: var(--radius-md);
+}
+
+.schema-impact-modal .modal-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.schema-impact-modal .modal-header p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.schema-impact-modal .modal-header code {
+    padding: 2px 6px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.8125rem;
+}
+
+.schema-impact-modal .risk-badge {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.schema-impact-modal .risk-badge.high {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.schema-impact-modal .risk-badge.medium {
+    background: rgba(250, 204, 21, 0.15);
+    color: #fbbf24;
+}
+
+.schema-impact-modal .risk-badge.low {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.schema-impact-modal .risk-badge.none {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.schema-impact-modal .affected-rules {
+    max-height: 250px;
+    overflow-y: auto;
+    margin: var(--space-md) 0;
+}
+
+.schema-impact-modal .affected-rule {
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--space-sm);
+}
+
+.schema-impact-modal .affected-rule:last-child {
+    margin-bottom: 0;
+}
+
+.schema-impact-modal .affected-rule .rule-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+}
+
+.schema-impact-modal .affected-rule .rule-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.schema-impact-modal .affected-rule .project-name {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.schema-impact-modal .affected-rule .usages {
+    padding-left: var(--space-lg);
+}
+
+.schema-impact-modal .affected-rule .usage-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-xs);
+}
+
+.schema-impact-modal .affected-rule .usage-tag {
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.schema-impact-modal .affected-rule .usage-tag.condition {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.schema-impact-modal .affected-rule .usage-tag.action {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+}
+
+.schema-impact-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Empty State */
+.schema-attribute-editor .empty-state {
+    text-align: center;
+    padding: var(--space-2xl) var(--space-xl);
+}
+
+.schema-attribute-editor .empty-state p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* Animation */
+@keyframes highlight-row {
+    0% {
+        background: rgba(99, 102, 241, 0.2);
+    }
+
+    100% {
+        background: transparent;
+    }
+}
+
+.schema-attribute-editor tr.highlight {
+    animation: highlight-row 1.5s ease-out;
+}

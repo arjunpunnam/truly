@@ -1,0 +1,118 @@
+.object-tree {
+    font-size: 0.875rem;
+    user-select: none;
+}
+
+.object-tree-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    color: var(--text-muted);
+    gap: var(--space-sm);
+}
+
+.tree-node-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.tree-node-content:hover {
+    background: var(--bg-hover);
+}
+
+.tree-node-content.selected {
+    background: var(--accent-glow);
+}
+
+.tree-node-expand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.tree-node-icon {
+    display: flex;
+    align-items: center;
+}
+
+.tree-node-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    flex: 1;
+}
+
+.tree-node-type {
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+.tree-node-required {
+    color: var(--error);
+    font-weight: 600;
+}
+
+.tree-node-children {
+    animation: slideDown 0.2s ease;
+}
+
+.tree-node-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.tree-node-content:hover .tree-node-actions {
+    opacity: 1;
+}
+
+.tree-action-btn {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.625rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.tree-action-btn.if {
+    background: #e7f5ff;
+    color: #1971c2;
+}
+
+.tree-action-btn.if:hover {
+    background: #1971c2;
+    color: white;
+}
+
+.tree-action-btn.then {
+    background: #f3f0ff;
+    color: #6741d9;
+}
+
+.tree-action-btn.then:hover {
+    background: #6741d9;
+    color: white;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,82 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e7]
+      - generic [ref=e11]: Rule Engine
+    - navigation [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]: Automate
+        - link "Schemas" [ref=e15] [cursor=pointer]:
+          - /url: /
+          - img [ref=e16]
+          - generic [ref=e20]: Schemas
+        - link "Projects" [ref=e21] [cursor=pointer]:
+          - /url: /projects
+          - img [ref=e22]
+          - generic [ref=e24]: Projects
+        - link "Global Rules" [ref=e25] [cursor=pointer]:
+          - /url: /rules
+          - img [ref=e26]
+          - generic [ref=e30]: Global Rules
+        - link "Execution" [ref=e31] [cursor=pointer]:
+          - /url: /execute
+          - img [ref=e32]
+          - generic [ref=e34]: Execution
+      - generic [ref=e35]:
+        - generic [ref=e36]: General
+        - link "Audit Log" [ref=e37] [cursor=pointer]:
+          - /url: /history
+          - img [ref=e38]
+          - generic [ref=e42]: Audit Log
+        - link "Settings" [ref=e43] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e44]
+          - generic [ref=e47]: Settings
+    - generic [ref=e48]:
+      - link "System Help" [ref=e49] [cursor=pointer]:
+        - /url: /help
+        - img [ref=e50]
+        - generic [ref=e53]: System Help
+      - generic [ref=e54]: v1.2.0
+  - main [ref=e55]:
+    - generic [ref=e56]:
+      - button "Workspace / Automations" [ref=e58] [cursor=pointer]
+      - generic [ref=e61]: AP
+    - generic [ref=e63]:
+      - generic [ref=e65]:
+        - heading "Rule Execution" [level=1] [ref=e66]
+        - paragraph [ref=e67]: Execute rules for a project with test data
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - heading "Input Configuration" [level=3] [ref=e71]
+            - generic [ref=e72]: JSON Mode
+          - generic [ref=e73]:
+            - generic [ref=e74]: Project Template
+            - combobox [ref=e75]:
+              - option "Choose a project to execute..." [selected]
+              - option "test"
+              - option "Fraud score"
+              - option "Fraud Check"
+          - generic [ref=e76]:
+            - generic [ref=e78]: Fact Sequences (Array)
+            - 'textbox "[\\n { \"orderId\": 1, \"total\": 1500 }\\n]" [ref=e80]':
+              - /placeholder: "[\\n  { \"orderId\": 1, \"total\": 1500 }\\n]"
+              - text: "[ { } ]"
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - checkbox "Dry Run Mode" [ref=e83]
+              - generic [ref=e84]: Dry Run Mode
+            - button "Execute Project" [disabled] [ref=e85] [cursor=pointer]:
+              - img [ref=e86]
+              - text: Execute Project
+        - generic [ref=e88]:
+          - heading "Execution Traces" [level=3] [ref=e89]
+          - generic [ref=e90]:
+            - img [ref=e91]
+            - heading "No Active Traces" [level=4] [ref=e93]
+            - paragraph [ref=e94]: Select a project and provide facts to see the execution flow.
+```

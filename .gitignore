@@ -1,0 +1,23 @@
+# Database files (local project directory)
+backend/data/
+*.db
+*.mv.db
+*.trace.db
+
+# Persistent database files (user home directory - not in repo)
+# ~/.ruleengine/ is excluded by default as it's outside the project
+
+# Build artifacts
+backend/target/
+frontend/dist/
+frontend/node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+

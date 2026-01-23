@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truly - Visual Rule Engine for Modern Teams</title>
+    <meta name="description"
+        content="Build, test, and deploy business rules without code. Open-source rule engine with visual builder, Drools execution, and enterprise-ready features.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1aa;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --success: #10b981;
+            --border: rgba(255, 255, 255, 0.08);
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --gradient-2: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-glow::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(2%, 2%) rotate(1deg);
+            }
+
+            50% {
+                transform: translate(-1%, 3%) rotate(-1deg);
+            }
+
+            75% {
+                transform: translate(1%, -2%) rotate(0.5deg);
+            }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.8);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge span {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            max-width: 900px;
+        }
+
+        .hero h1 .gradient {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hero-visual {
+            margin-top: 4rem;
+            width: 100%;
+            max-width: 1000px;
+            position: relative;
+        }
+
+        .hero-visual img {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .hero-visual::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 17px;
+            padding: 1px;
+            background: var(--gradient-1);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
+        }
+
+        /* Features Section */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* How It Works */
+        .steps-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .step-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .usecases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .usecase-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .usecase-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .usecase-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .usecase-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 60px var(--accent-glow);
+        }
+
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 1rem 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .pricing-card .description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-card li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .pricing-card li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 8rem 2rem;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            max-width: 300px;
+        }
+
+        .footer-links h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+            max-width: 600px;
+        }
+
+        .code-block .comment {
+            color: #6b7280;
+        }
+
+        .code-block .command {
+            color: var(--success);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-glow"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">Truly</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#pricing">Pricing</a>
+                <a href="https://github.com/arjunpunnam/tries/tree/master/2025-12-23-truly/rule-engine"
+                    target="_blank">GitHub</a>
+                <a href="#" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span>●</span> Open Source & Free Forever
+        </div>
+        <h1>
+            Build Business Rules<br>
+            <span class="gradient">Without Writing Code</span>
+        </h1>
+        <p>
+            Visual rule engine for modern teams. Design, test, and deploy complex business logic
+            with drag-and-drop simplicity. Powered by Drools.
+        </p>
+        <div class="hero-cta">
+            <a href="http://localhost:3001" class="btn btn-primary">
+                🚀 Try Live Demo
+            </a>
+            <a href="https://github.com/arjunpunnam/tries/tree/master/2025-12-23-truly/rule-engine"
+                class="btn btn-secondary" target="_blank">
+                ⭐ Star on GitHub
+            </a>
+        </div>
+
+        <div class="hero-visual">
+            <div
+                style="background: var(--bg-card); border-radius: 16px; padding: 2rem; border: 1px solid var(--border);">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f57;"></div>
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #febc2e;"></div>
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #28c840;"></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 200px 1fr; gap: 1rem; min-height: 300px;">
+                    <div style="background: var(--bg-secondary); border-radius: 8px; padding: 1rem;">
+                        <div
+                            style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 1rem;">
+                            Schemas</div>
+                        <div
+                            style="background: var(--accent-primary); border-radius: 6px; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                            📦 Loan Application</div>
+                        <div
+                            style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                            📋 Customer Profile</div>
+                        <div
+                            style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.85rem; color: var(--text-secondary);">
+                            🎯 Risk Assessment</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border-radius: 8px; padding: 1rem;">
+                        <div
+                            style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 1rem;">
+                            Rule Builder</div>
+                        <div
+                            style="background: rgba(99, 102, 241, 0.1); border: 1px solid var(--accent-primary); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                            <div style="font-size: 0.8rem; color: var(--accent-primary); margin-bottom: 0.5rem;">IF
+                            </div>
+                            <div style="font-size: 0.9rem;">creditScore <span style="color: var(--success);">≥</span>
+                                700 AND income <span style="color: var(--success);">≥</span> 50000</div>
+                        </div>
+                        <div
+                            style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); border-radius: 8px; padding: 1rem;">
+                            <div style="font-size: 0.8rem; color: var(--success); margin-bottom: 0.5rem;">THEN</div>
+                            <div style="font-size: 0.9rem;">Set <span style="color: var(--success);">approved</span> =
+                                true</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="section-header">
+            <h2>Everything You Need to Manage Rules</h2>
+            <p>From simple conditions to complex decision trees, Truly handles it all with an intuitive visual
+                interface.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Visual Rule Builder</h3>
+                <p>Design complex rules with drag-and-drop. No coding required. See your logic as you build it.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Schema Import</h3>
+                <p>Import from Swagger, OpenAPI, or JSON Schema. Your data models become rule building blocks.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Drools Powered</h3>
+                <p>Enterprise-grade rule execution with the power of Drools. Battle-tested in production.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧪</div>
+                <h3>Test & Simulate</h3>
+                <p>Test your rules before deploying. Simulate with sample data and see results instantly.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📜</div>
+                <h3>Execution History</h3>
+                <p>Full audit trail of every rule execution. Debug issues and track decisions over time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔌</div>
+                <h3>REST API</h3>
+                <p>Integrate with any system via REST API. Execute rules programmatically from anywhere.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section" id="how-it-works" style="background: var(--bg-secondary);">
+        <div class="section-header">
+            <h2>Up and Running in Minutes</h2>
+            <p>Get started with Truly in three simple steps.</p>
+        </div>
+
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Define Your Schema</h3>
+                    <p>Import your data model from Swagger, JSON Schema, or define it manually. This becomes the
+                        foundation for your rules.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Build Your Rules</h3>
+                    <p>Use the visual builder to create IF-THEN rules. Combine conditions with AND/OR logic. Set actions
+                        like MODIFY, LOG, or WEBHOOK.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Test & Deploy</h3>
+                    <p>Test with sample data in the simulator. Once satisfied, your rules are ready. Execute via API or
+                        the built-in console.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="max-width: 600px; margin: 3rem auto 0; text-align: center;">
+            <div class="code-block" style="text-align: left;">
+                <span class="comment"># Quick start with Docker</span><br>
+                <span class="command">docker run -p 8092:8092 -p 3000:3000 truly/rule-engine</span><br><br>
+                <span class="comment"># Or clone and run locally</span><br>
+                <span class="command">git clone https://github.com/arjunpunnam/tries.git</span><br>
+                <span class="command">cd tries/2025-12-23-truly/rule-engine</span><br>
+                <span class="command">./start-dev.sh</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Built for Real-World Problems</h2>
+            <p>From financial services to e-commerce, Truly powers critical business decisions.</p>
+        </div>
+
+        <div class="usecases-grid">
+            <div class="usecase-card">
+                <div class="icon">🏦</div>
+                <h3>Loan Approval</h3>
+                <p>Automate credit decisions with risk-based rules</p>
+            </div>
+            <div class="usecase-card">
+                <div class="icon">🛡️</div>
+                <h3>Fraud Detection</h3>
+                <p>Flag suspicious transactions in real-time</p>
+            </div>
+            <div class="usecase-card">
+                <div class="icon">💰</div>
+                <h3>Dynamic Pricing</h3>
+                <p>Adjust prices based on demand and inventory</p>
+            </div>
+            <div class="usecase-card">
+                <div class="icon">🎫</div>
+                <h3>Eligibility Checks</h3>
+                <p>Determine eligibility for programs and offers</p>
+            </div>
+            <div class="usecase-card">
+                <div class="icon">📦</div>
+                <h3>Order Routing</h3>
+                <p>Route orders to optimal fulfillment centers</p>
+            </div>
+            <div class="usecase-card">
+                <div class="icon">🔔</div>
+                <h3>Alert Generation</h3>
+                <p>Trigger notifications based on conditions</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section" id="pricing" style="background: var(--bg-secondary);">
+        <div class="section-header">
+            <h2>Simple, Transparent Pricing</h2>
+            <p>Start free and scale as you grow. No surprises.</p>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Open Source</h3>
+                <div class="price">$0 <span>forever</span></div>
+                <p class="description">Self-hosted, unlimited everything</p>
+                <ul>
+                    <li>Full visual rule builder</li>
+                    <li>Unlimited rules & schemas</li>
+                    <li>Unlimited executions</li>
+                    <li>REST API access</li>
+                    <li>SQLite or PostgreSQL</li>
+                    <li>Docker & Kubernetes ready</li>
+                    <li>Community support</li>
+                </ul>
+                <a href="https://github.com/arjunpunnam/tries/tree/master/2025-12-23-truly/rule-engine"
+                    class="btn btn-secondary" style="width: 100%; justify-content: center;" target="_blank">
+                    View on GitHub
+                </a>
+            </div>
+
+            <div class="pricing-card featured">
+                <h3>Truly Cloud</h3>
+                <div class="price">$29 <span>/user/mo</span></div>
+                <p class="description">Managed, team-ready, enterprise features</p>
+                <ul>
+                    <li>Everything in Open Source</li>
+                    <li>Multi-user team access</li>
+                    <li>Role-based permissions</li>
+                    <li>SSO / SAML integration</li>
+                    <li>Extended audit logs</li>
+                    <li>Usage analytics dashboard</li>
+                    <li>Priority support</li>
+                    <li>99.9% uptime SLA</li>
+                </ul>
+                <a href="#" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    Join Waitlist
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Ready to Simplify Your Business Rules?</h2>
+        <p>Join thousands of developers building smarter applications with Truly.</p>
+        <div class="hero-cta">
+            <a href="http://localhost:3001" class="btn btn-primary">
+                🚀 Try Live Demo
+            </a>
+            <a href="https://github.com/arjunpunnam/tries/tree/master/2025-12-23-truly/rule-engine"
+                class="btn btn-secondary" target="_blank">
+                📖 Read the Docs
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>Truly</h3>
+                <p>The friendly, visual-first rule engine that developers actually enjoy using.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Changelog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Getting Started</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Use Cases</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="https://github.com/arjunpunnam/tries" target="_blank">GitHub</a></li>
+                    <li><a href="#">Discord</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Contributing</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>© 2026 Truly. Open source under MIT License.</div>
+            <div>Made with ❤️ for developers</div>
+        </div>
+    </footer>
+</body>
+
+</html>
