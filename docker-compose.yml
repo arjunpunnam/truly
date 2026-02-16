@@ -17,6 +17,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=sqlite
       - SQLITE_PATH=/data/ruleengine.db
+      - TURSO_DATABASE_URL=
+      - TURSO_AUTH_TOKEN=
       - JAVA_OPTS=-Xms256m -Xmx512m
     volumes:
       - truly-data:/data
@@ -28,6 +30,25 @@ services:
       start_period: 60s
     restart: unless-stopped
 
+  sqld:
+    image: ghcr.io/tursodatabase/sqld:latest
+    container_name: truly-sqld
+    ports:
+      - "8080:8080"
+    volumes:
+      - sqld-data:/data
+    environment:
+      - SQLD_NODE=primary
+    command: [ "sqld", "--enable-namespaces", "--http-listen-addr", "0.0.0.0:8080" ]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
 volumes:
   truly-data:
     name: truly-data
+  sqld-data:
+    name: sqld-data
