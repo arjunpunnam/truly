@@ -195,14 +195,20 @@ export default function ProjectTemplatesPage() {
             )}
 
             {showCreate && (
-                <div className="modal-overlay" onClick={() => setShowCreate(false)}>
-                    <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px' }}>
-                        <div className="modal-header">
-                            <h2>Create Template</h2>
-                            <button className="modal-close" onClick={() => setShowCreate(false)}>×</button>
-                        </div>
-                        <form onSubmit={handleCreate}>
-                            <div className="modal-body">
+                <div className="card" style={{ marginBottom: 'var(--space-lg)' }}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: 'var(--space-md)',
+                        paddingBottom: 'var(--space-md)',
+                        borderBottom: '1px solid var(--border-color)'
+                    }}>
+                        <h2 style={{ margin: 0, fontSize: '1.125rem' }}>Create Template</h2>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setShowCreate(false)} type="button">Close</button>
+                    </div>
+                    <form onSubmit={handleCreate}>
+                        <div>
                                 <div style={{
                                     marginBottom: 'var(--space-md)',
                                     padding: 'var(--space-md)',
@@ -419,25 +425,24 @@ export default function ProjectTemplatesPage() {
                                         ))}
                                     </div>
                                 </div>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-sm)' }}>
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => setShowCreate(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                                disabled={creating || inputSchemaIds.length === 0 || outputSchemaIds.length === 0}
+                            >
+                                {creating ? 'Creating...' : 'Create Template'}
+                            </button>
                             </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowCreate(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary"
-                                    disabled={creating || inputSchemaIds.length === 0 || outputSchemaIds.length === 0}
-                                >
-                                    {creating ? 'Creating...' : 'Create Template'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             )}
 
