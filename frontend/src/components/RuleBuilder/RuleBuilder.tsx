@@ -366,7 +366,7 @@ export default function RuleBuilder({
                                                         }}
                                                     />
                                                     {prop && (
-                                                        <span style={{
+                                                        <span className="value-type-hint" style={{
                                                             position: 'absolute',
                                                             right: '8px',
                                                             top: '50%',
@@ -532,7 +532,7 @@ export default function RuleBuilder({
                                                                                 }}
                                                                             />
                                                                             {nestedProp && (
-                                                                                <span style={{
+                                                                                <span className="value-type-hint" style={{
                                                                                     position: 'absolute',
                                                                                     right: '8px',
                                                                                     top: '50%',
