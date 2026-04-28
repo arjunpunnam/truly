@@ -606,17 +606,6 @@ export default function RulesPage() {
                             </option>
                         ))}
                     </select>
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => {
-                            setSelectedTemplateId(null); // Reset so template selector shows
-                            toggleExpandRule('new');
-                        }}
-                        disabled={expandedRuleId === 'new'}
-                    >
-                        <Plus size={18} />
-                        New Automation
-                    </button>
                 </div>
             </div>
 
