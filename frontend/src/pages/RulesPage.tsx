@@ -649,7 +649,7 @@ export default function RulesPage() {
                     <p>
                         Create rules for <strong>{selectedTemplate?.name}</strong> to automate your workflows.
                     </p>
-                    <button className="btn btn-primary" onClick={() => toggleExpandRule('new')}>
+                    <button className="btn btn-primary btn-sm" onClick={() => toggleExpandRule('new')}>
                         <Plus size={18} />
                         Create First Rule
                     </button>

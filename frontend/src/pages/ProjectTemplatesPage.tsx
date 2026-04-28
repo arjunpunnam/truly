@@ -454,7 +454,7 @@ export default function ProjectTemplatesPage() {
                         Create a template from project schemas to define input/output contracts
                     </p>
                     <button
-                        className="btn btn-primary"
+                        className="btn btn-primary btn-sm"
                         onClick={() => setShowCreate(true)}
                         disabled={schemas.length === 0}
                     >
