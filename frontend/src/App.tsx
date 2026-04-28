@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { Settings, HelpCircle, Folder, Sparkles } from 'lucide-react';
 import TemplateDetailsPage from './pages/TemplateDetailsPage';
@@ -10,9 +11,19 @@ import ProjectSchemasPage from './pages/ProjectSchemasPage';
 import ProjectTemplatesPage from './pages/ProjectTemplatesPage';
 import ProjectAuditPage from './pages/ProjectAuditPage';
 import ProjectDashboardPage from './pages/ProjectDashboardPage';
+import { projectApi } from './services/api';
+import { RuleProject } from './types';
 import './App.css';
 
 function App() {
+    const [projects, setProjects] = useState<RuleProject[]>([]);
+
+    useEffect(() => {
+        projectApi.getAll()
+            .then(setProjects)
+            .catch((err) => console.error('Failed to load sidebar projects', err));
+    }, []);
+
     return (
         <BrowserRouter>
             <div className="app-container">
@@ -31,6 +42,19 @@ function App() {
                                 <Folder size={18} />
                                 <span>Projects</span>
                             </NavLink>
+                            {projects.length > 0 && (
+                                <div className="project-list">
+                                    {projects.map(project => (
+                                        <NavLink
+                                            key={project.id}
+                                            to={`/projects/${project.id}`}
+                                            className={({ isActive }) => isActive ? 'project-link active' : 'project-link'}
+                                        >
+                                            {project.name}
+                                        </NavLink>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="nav-group nav-group-bottom">

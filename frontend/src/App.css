@@ -33,6 +33,39 @@
     gap: 2px;
 }
 
+.project-list {
+    margin-top: 4px;
+    padding-left: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 42vh;
+    overflow-y: auto;
+}
+
+.project-link {
+    display: block;
+    padding: 6px var(--space-sm);
+    border-radius: var(--radius-sm);
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all var(--transition-fast);
+}
+
+.project-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.project-link.active {
+    color: #ffffff;
+    background: rgba(99, 102, 241, 0.34);
+    box-shadow: inset 2px 0 0 #a5b4fc;
+}
+
 .nav-group-bottom {
     margin-top: auto;
     padding-top: var(--space-lg);
