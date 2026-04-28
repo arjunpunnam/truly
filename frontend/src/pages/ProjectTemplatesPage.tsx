@@ -457,8 +457,9 @@ export default function ProjectTemplatesPage() {
                         className="btn btn-primary btn-sm"
                         onClick={() => setShowCreate(true)}
                         disabled={schemas.length === 0}
+                        style={{ padding: '6px 12px', minHeight: '32px', fontSize: '0.8125rem' }}
                     >
-                        <Plus size={18} />
+                        <Plus size={14} />
                         Create Template
                     </button>
                 </div>

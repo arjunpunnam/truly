@@ -423,7 +423,7 @@ a:hover {
   color: var(--text-muted);
 }
 
-.empty-state svg {
+.empty-state > svg {
   width: 64px;
   height: 64px;
   margin-bottom: var(--space-lg);
