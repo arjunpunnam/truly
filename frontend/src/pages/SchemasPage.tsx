@@ -705,7 +705,7 @@ export default function SchemasPage() {
                         flexDirection: 'column'
                     }}>
                         <div className="modal-header" style={{ flexShrink: 0 }}>
-                            <h2>Import Schema</h2>
+                            <h2>Add Schema to Project</h2>
                             <button className="modal-close" onClick={() => setShowImportModal(false)}>×</button>
                         </div>
                         <div className="modal-body" style={{ 
@@ -719,6 +719,107 @@ export default function SchemasPage() {
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-lg)', height: '100%', overflow: 'hidden' }}>
                                     {/* Left Side - Input */}
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', overflow: 'hidden' }}>
+                                        <div className="form-group" style={{ flexShrink: 0 }}>
+                                            <div style={{
+                                                padding: 'var(--space-md)',
+                                                background: 'var(--bg-secondary)',
+                                                border: '1px solid var(--border-color)',
+                                                borderRadius: 'var(--radius-md)',
+                                                marginBottom: 'var(--space-md)'
+                                            }}>
+                                                <h3 style={{ margin: 0, fontSize: '1rem' }}>Add Schema to Project</h3>
+                                                <p style={{ margin: '6px 0 0', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+                                                    Create a new schema or import from OpenAPI, JSON Schema, or a JSON example.
+                                                </p>
+                                            </div>
+                                            <label className="form-label">Schema Source</label>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 'var(--space-sm)' }}>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-ghost"
+                                                    onClick={() => {
+                                                        setImportType('openapi');
+                                                        setStep(1);
+                                                        setPreviewEntities([]);
+                                                        setSelectedEntities([]);
+                                                    }}
+                                                    data-testid="import-type-openapi"
+                                                    style={{
+                                                        justifyContent: 'flex-start',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'flex-start',
+                                                        padding: 'var(--space-sm)',
+                                                        minHeight: '78px',
+                                                        border: `1px solid ${importType === 'openapi' ? 'var(--primary-color)' : 'var(--border-color)'}`,
+                                                        background: importType === 'openapi' ? 'var(--accent-glow)' : 'var(--bg-primary)'
+                                                    }}
+                                                >
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600 }}>
+                                                        <Database size={14} />
+                                                        OpenAPI/Swagger
+                                                    </span>
+                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                                        Scan and import multiple entities
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-ghost"
+                                                    onClick={() => {
+                                                        setImportType('json-schema');
+                                                        setStep(1);
+                                                        setPreviewEntities([]);
+                                                        setSelectedEntities([]);
+                                                    }}
+                                                    data-testid="import-type-json-schema"
+                                                    style={{
+                                                        justifyContent: 'flex-start',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'flex-start',
+                                                        padding: 'var(--space-sm)',
+                                                        minHeight: '78px',
+                                                        border: `1px solid ${importType === 'json-schema' ? 'var(--primary-color)' : 'var(--border-color)'}`,
+                                                        background: importType === 'json-schema' ? 'var(--accent-glow)' : 'var(--bg-primary)'
+                                                    }}
+                                                >
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600 }}>
+                                                        <FileJson size={14} />
+                                                        JSON Schema
+                                                    </span>
+                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                                        Import one schema definition
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-ghost"
+                                                    onClick={() => {
+                                                        setImportType('example');
+                                                        setStep(1);
+                                                        setPreviewEntities([]);
+                                                        setSelectedEntities([]);
+                                                    }}
+                                                    data-testid="import-type-example"
+                                                    style={{
+                                                        justifyContent: 'flex-start',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'flex-start',
+                                                        padding: 'var(--space-sm)',
+                                                        minHeight: '78px',
+                                                        border: `1px solid ${importType === 'example' ? 'var(--primary-color)' : 'var(--border-color)'}`,
+                                                        background: importType === 'example' ? 'var(--accent-glow)' : 'var(--bg-primary)'
+                                                    }}
+                                                >
+                                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600 }}>
+                                                        <Plus size={14} />
+                                                        Create New
+                                                    </span>
+                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                                        Infer schema from JSON example
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', flexShrink: 0 }}>
                                             <div className="form-group">
                                                 <label className="form-label">Schema Name</label>
@@ -762,51 +863,6 @@ export default function SchemasPage() {
                                                     placeholder="e.g., E-commerce, Finance"
                                                     autoComplete="off"
                                                 />
-                                            </div>
-                                        </div>
-
-                                        <div className="form-group" style={{ flexShrink: 0 }}>
-                                            <label className="form-label">Import Type</label>
-                                            <div className="tabs">
-                                                <button
-                                                    type="button"
-                                                    className={`tab ${importType === 'openapi' ? 'active' : ''}`}
-                                                    onClick={() => {
-                                                        setImportType('openapi');
-                                                        setStep(1);
-                                                        setPreviewEntities([]);
-                                                        setSelectedEntities([]);
-                                                    }}
-                                                    data-testid="import-type-openapi"
-                                                >
-                                                    OpenAPI/Swagger
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className={`tab ${importType === 'json-schema' ? 'active' : ''}`}
-                                                    onClick={() => {
-                                                        setImportType('json-schema');
-                                                        setStep(1);
-                                                        setPreviewEntities([]);
-                                                        setSelectedEntities([]);
-                                                    }}
-                                                    data-testid="import-type-json-schema"
-                                                >
-                                                    JSON Schema
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className={`tab ${importType === 'example' ? 'active' : ''}`}
-                                                    onClick={() => {
-                                                        setImportType('example');
-                                                        setStep(1);
-                                                        setPreviewEntities([]);
-                                                        setSelectedEntities([]);
-                                                    }}
-                                                    data-testid="import-type-example"
-                                                >
-                                                    JSON Example
-                                                </button>
                                             </div>
                                         </div>
 

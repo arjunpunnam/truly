@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, CheckSquare, Square } from 'lucide-react';
+import { Upload, CheckSquare, Square, Plus, Database, FileJson } from 'lucide-react';
 import { schemaApi } from '../services/api';
 
 
@@ -168,48 +168,112 @@ export default function SchemaImportForm({ projectId, onSuccess }: SchemaImportF
 
             <div className="form-group">
                 <label className="form-label">Schema Source</label>
-                <div className="tabs">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 'var(--space-sm)' }}>
                     <button
                         type="button"
-                        className={`tab ${importType === 'manual' ? 'active' : ''}`}
+                        className="btn btn-ghost"
                         onClick={() => {
                             setImportType('manual');
                             setStep(1);
                         }}
+                        style={{
+                            justifyContent: 'flex-start',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            gap: '2px',
+                            padding: 'var(--space-sm)',
+                            minHeight: '76px',
+                            border: `1px solid ${importType === 'manual' ? 'var(--primary-color)' : 'var(--border-color)'}`,
+                            background: importType === 'manual' ? 'var(--accent-glow)' : 'var(--bg-primary)'
+                        }}
                     >
-                        ✏️ Create New
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600 }}>
+                            <Plus size={14} />
+                            Create New
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            Build schema with fields
+                        </span>
                     </button>
                     <button
                         type="button"
-                        className={`tab ${importType === 'openapi' ? 'active' : ''}`}
+                        className="btn btn-ghost"
                         onClick={() => {
                             setImportType('openapi');
                             setStep(1);
                             setPreviewEntities([]);
                             setSelectedEntities([]);
                         }}
+                        style={{
+                            justifyContent: 'flex-start',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            gap: '2px',
+                            padding: 'var(--space-sm)',
+                            minHeight: '76px',
+                            border: `1px solid ${importType === 'openapi' ? 'var(--primary-color)' : 'var(--border-color)'}`,
+                            background: importType === 'openapi' ? 'var(--accent-glow)' : 'var(--bg-primary)'
+                        }}
                     >
-                        OpenAPI/Swagger
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600 }}>
+                            <Database size={14} />
+                            OpenAPI/Swagger
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            Scan and import entities
+                        </span>
                     </button>
                     <button
                         type="button"
-                        className={`tab ${importType === 'json-schema' ? 'active' : ''}`}
+                        className="btn btn-ghost"
                         onClick={() => {
                             setImportType('json-schema');
                             setStep(1);
                         }}
+                        style={{
+                            justifyContent: 'flex-start',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            gap: '2px',
+                            padding: 'var(--space-sm)',
+                            minHeight: '76px',
+                            border: `1px solid ${importType === 'json-schema' ? 'var(--primary-color)' : 'var(--border-color)'}`,
+                            background: importType === 'json-schema' ? 'var(--accent-glow)' : 'var(--bg-primary)'
+                        }}
                     >
-                        JSON Schema
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600 }}>
+                            <FileJson size={14} />
+                            JSON Schema
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            Import schema definition
+                        </span>
                     </button>
                     <button
                         type="button"
-                        className={`tab ${importType === 'example' ? 'active' : ''}`}
+                        className="btn btn-ghost"
                         onClick={() => {
                             setImportType('example');
                             setStep(1);
                         }}
+                        style={{
+                            justifyContent: 'flex-start',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            gap: '2px',
+                            padding: 'var(--space-sm)',
+                            minHeight: '76px',
+                            border: `1px solid ${importType === 'example' ? 'var(--primary-color)' : 'var(--border-color)'}`,
+                            background: importType === 'example' ? 'var(--accent-glow)' : 'var(--bg-primary)'
+                        }}
                     >
-                        JSON Example
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', fontWeight: 600 }}>
+                            <Upload size={14} />
+                            JSON Example
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            Infer schema from sample data
+                        </span>
                     </button>
                 </div>
             </div>
@@ -468,4 +532,3 @@ export default function SchemaImportForm({ projectId, onSuccess }: SchemaImportF
         </div>
     );
 }
-
