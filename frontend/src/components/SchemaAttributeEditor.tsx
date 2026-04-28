@@ -360,34 +360,24 @@ export default function SchemaAttributeEditor({ schemaId, schemaName, onUpdate }
                                                 />
                                             </td>
                                             <td className="py-2 px-3 text-right">
-                                                <button
-                                                    onClick={handleSaveEdit}
-                                                    className="btn btn-ghost btn-sm"
-                                                    title="Save"
-                                                    aria-label="Save changes"
-                                                    style={{
-                                                        padding: '6px',
-                                                        minWidth: '30px',
-                                                        minHeight: '30px',
-                                                        color: '#22c55e'
-                                                    }}
-                                                >
-                                                    <Check className="h-4 w-4" />
-                                                </button>
-                                                <button
-                                                    onClick={cancelEdit}
-                                                    className="btn btn-ghost btn-sm"
-                                                    title="Cancel"
-                                                    aria-label="Cancel edit"
-                                                    style={{
-                                                        padding: '6px',
-                                                        minWidth: '30px',
-                                                        minHeight: '30px',
-                                                        marginLeft: '6px'
-                                                    }}
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                </button>
+                                                <div className="action-btns">
+                                                    <button
+                                                        onClick={handleSaveEdit}
+                                                        className="action-btn save"
+                                                        title="Save"
+                                                        aria-label="Save changes"
+                                                    >
+                                                        <Check size={15} />
+                                                    </button>
+                                                    <button
+                                                        onClick={cancelEdit}
+                                                        className="action-btn cancel"
+                                                        title="Cancel"
+                                                        aria-label="Cancel edit"
+                                                    >
+                                                        <X size={15} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </>
                                     ) : (
@@ -408,39 +398,24 @@ export default function SchemaAttributeEditor({ schemaId, schemaName, onUpdate }
                                                 )}
                                             </td>
                                             <td className="py-2 px-3 text-right">
-                                                <button
-                                                    onClick={() => startEdit(attr)}
-                                                    className="btn btn-ghost btn-sm"
-                                                    title="Edit"
-                                                    aria-label={`Edit ${attr.name}`}
-                                                    style={{
-                                                        padding: '6px',
-                                                        minWidth: '30px',
-                                                        minHeight: '30px',
-                                                        color: 'var(--primary-color)',
-                                                        border: '1px solid var(--border-color)',
-                                                        background: 'var(--bg-secondary)'
-                                                    }}
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(attr.name)}
-                                                    className="btn btn-ghost btn-sm"
-                                                    title="Delete"
-                                                    aria-label={`Delete ${attr.name}`}
-                                                    style={{
-                                                        padding: '6px',
-                                                        minWidth: '30px',
-                                                        minHeight: '30px',
-                                                        marginLeft: '6px',
-                                                        color: 'var(--error)',
-                                                        border: '1px solid rgba(244, 63, 94, 0.35)',
-                                                        background: 'rgba(244, 63, 94, 0.12)'
-                                                    }}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </button>
+                                                <div className="action-btns">
+                                                    <button
+                                                        onClick={() => startEdit(attr)}
+                                                        className="action-btn edit"
+                                                        title="Edit"
+                                                        aria-label={`Edit ${attr.name}`}
+                                                    >
+                                                        <Pencil size={15} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(attr.name)}
+                                                        className="action-btn delete"
+                                                        title="Delete"
+                                                        aria-label={`Delete ${attr.name}`}
+                                                    >
+                                                        <Trash2 size={15} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </>
                                     )}
