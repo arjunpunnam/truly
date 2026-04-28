@@ -361,8 +361,7 @@ export default function RuleBuilder({
                                                         placeholder={`Value (${typeLabel})`}
                                                         title={`Expected type: ${typeLabel}`}
                                                         style={{
-                                                            borderColor: !isValid ? 'var(--error)' : undefined,
-                                                            paddingRight: prop ? '60px' : undefined
+                                                            borderColor: !isValid ? 'var(--error)' : undefined
                                                         }}
                                                     />
                                                     {prop && (
@@ -527,8 +526,7 @@ export default function RuleBuilder({
                                                                                 placeholder={`Value (${typeLabel})`}
                                                                                 title={`Expected type: ${typeLabel}`}
                                                                                 style={{
-                                                                                    borderColor: !isValid ? 'var(--error)' : undefined,
-                                                                                    paddingRight: nestedProp ? '60px' : undefined
+                                                                                    borderColor: !isValid ? 'var(--error)' : undefined
                                                                                 }}
                                                                             />
                                                                             {nestedProp && (
