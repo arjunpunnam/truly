@@ -606,6 +606,17 @@ export default function RulesPage() {
                             </option>
                         ))}
                     </select>
+                    {selectedTemplateId && (
+                        <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => toggleExpandRule('new')}
+                            disabled={expandedRuleId === 'new'}
+                            style={{ padding: '6px 12px', minHeight: '32px', fontSize: '0.8125rem' }}
+                        >
+                            <Plus size={14} />
+                            New Rule
+                        </button>
+                    )}
                 </div>
             </div>
 
