@@ -446,7 +446,7 @@ export default function ProjectTemplatesPage() {
                 </div>
             )}
 
-            {templates.length === 0 ? (
+            {templates.length === 0 && !showCreate ? (
                 <div className="empty-state" style={{ padding: 'var(--space-2xl)' }}>
                     <Layout size={64} style={{ opacity: 0.5, marginBottom: 'var(--space-md)' }} />
                     <h3 style={{ marginBottom: 'var(--space-sm)' }}>No templates yet</h3>
