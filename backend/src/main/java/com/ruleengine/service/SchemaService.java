@@ -1,6 +1,7 @@
 package com.ruleengine.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruleengine.dto.SchemaDto;
@@ -20,8 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -412,12 +418,124 @@ public class SchemaService {
 
         // Parse properties for UI
         try {
-            SchemaPropertyDto properties = objectMapper.readValue(schema.getJsonSchema(), SchemaPropertyDto.class);
-            dto.setProperties(properties.getProperties());
+            dto.setProperties(extractProperties(schema.getJsonSchema()));
         } catch (JsonProcessingException e) {
             log.error("Failed to parse schema properties", e);
         }
 
         return dto;
+    }
+
+    private List<SchemaPropertyDto> extractProperties(String jsonSchema) throws JsonProcessingException {
+        if (jsonSchema == null || jsonSchema.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        JsonNode root = objectMapper.readTree(jsonSchema);
+        JsonNode propertiesNode = root.get("properties");
+        if (propertiesNode == null || propertiesNode.isNull()) {
+            return Collections.emptyList();
+        }
+
+        if (propertiesNode.isArray()) {
+            List<SchemaPropertyDto> properties = objectMapper.convertValue(propertiesNode,
+                    new TypeReference<List<SchemaPropertyDto>>() {});
+            return properties != null ? properties : Collections.emptyList();
+        }
+
+        if (propertiesNode.isObject()) {
+            Set<String> required = readRequired(root);
+            List<SchemaPropertyDto> properties = new ArrayList<>();
+            Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> field = fields.next();
+                properties.add(convertJsonSchemaProperty(field.getKey(), field.getValue(), field.getKey(),
+                        required.contains(field.getKey())));
+            }
+            return properties;
+        }
+
+        return Collections.emptyList();
+    }
+
+    private SchemaPropertyDto convertJsonSchemaProperty(String name, JsonNode node, String path, boolean required) {
+        String type = node.has("type") && node.get("type").isTextual() ? node.get("type").asText() : "object";
+        String format = node.has("format") && node.get("format").isTextual() ? node.get("format").asText() : null;
+        String description = node.has("description") && node.get("description").isTextual()
+                ? node.get("description").asText()
+                : null;
+
+        SchemaPropertyDto.SchemaPropertyDtoBuilder builder = SchemaPropertyDto.builder()
+                .name(name)
+                .path(path)
+                .type(type)
+                .format(format)
+                .description(description)
+                .required(required);
+
+        if (node.has("enum") && node.get("enum").isArray()) {
+            builder.enumValues(objectMapper.convertValue(node.get("enum"), new TypeReference<List<Object>>() {}));
+        }
+        if (node.has("default")) {
+            builder.defaultValue(objectMapper.convertValue(node.get("default"), Object.class));
+        }
+
+        if (node.has("properties") && node.get("properties").isObject()) {
+            Set<String> requiredChildren = readRequired(node);
+            List<SchemaPropertyDto> children = new ArrayList<>();
+            Iterator<Map.Entry<String, JsonNode>> childFields = node.get("properties").fields();
+            while (childFields.hasNext()) {
+                Map.Entry<String, JsonNode> child = childFields.next();
+                String childPath = path + "." + child.getKey();
+                children.add(convertJsonSchemaProperty(child.getKey(), child.getValue(), childPath,
+                        requiredChildren.contains(child.getKey())));
+            }
+            builder.properties(children);
+        }
+
+        if (node.has("items") && node.get("items").isObject()) {
+            builder.items(convertJsonSchemaProperty("items", node.get("items"), path + "[]", false));
+        }
+
+        if (node.has("additionalProperties") && node.get("additionalProperties").isObject()) {
+            builder.additionalProperties(
+                    convertJsonSchemaProperty("additionalProperties", node.get("additionalProperties"),
+                            path + ".*", false));
+        }
+
+        Map<String, Object> constraints = new LinkedHashMap<>();
+        copyConstraint(node, constraints, "minLength");
+        copyConstraint(node, constraints, "maxLength");
+        copyConstraint(node, constraints, "minimum");
+        copyConstraint(node, constraints, "maximum");
+        copyConstraint(node, constraints, "exclusiveMinimum");
+        copyConstraint(node, constraints, "exclusiveMaximum");
+        copyConstraint(node, constraints, "pattern");
+        copyConstraint(node, constraints, "minItems");
+        copyConstraint(node, constraints, "maxItems");
+        if (!constraints.isEmpty()) {
+            builder.constraints(constraints);
+        }
+
+        return builder.build();
+    }
+
+    private Set<String> readRequired(JsonNode node) {
+        if (!node.has("required") || !node.get("required").isArray()) {
+            return Collections.emptySet();
+        }
+        Set<String> required = new HashSet<>();
+        for (JsonNode item : node.get("required")) {
+            if (item.isTextual()) {
+                required.add(item.asText());
+            }
+        }
+        return required;
+    }
+
+    private void copyConstraint(JsonNode source, Map<String, Object> target, String field) {
+        if (source.has(field) && !source.get(field).isNull()) {
+            target.put(field, objectMapper.convertValue(source.get(field), Object.class));
+        }
     }
 }
