@@ -256,7 +256,7 @@ export default function RuleBuilder({
                                     <div className="logic-row animate-in">
                                         {/* Fact Selector (Schema) - Only Input Schemas */}
                                         {availableInputSchemas.length > 0 && onSchemaChange && (
-                                            <div className="row-fact" style={{ flex: 1 }}>
+                                            <div className="row-fact">
                                                 <select
                                                     className="minimal-select"
                                                     value={selectedSchemaId || ''}
@@ -341,7 +341,7 @@ export default function RuleBuilder({
                                             }
 
                                             return (
-                                                <div style={{ position: 'relative', flex: 2 }}>
+                                                <div className="row-value-wrapper" style={{ position: 'relative' }}>
                                                     <input
                                                         type={inputType}
                                                         className={`minimal-input row-value ${!isValid ? 'error' : ''}`}
@@ -394,7 +394,7 @@ export default function RuleBuilder({
                                             );
                                         })()}
 
-                                        <div style={{ display: 'flex', gap: 'var(--space-xs)', alignItems: 'center' }}>
+                                        <div className="row-controls">
                                             <button
                                                 className="btn-icon"
                                                 onClick={() => addNestedCondition(index)}
@@ -508,7 +508,7 @@ export default function RuleBuilder({
                                                                     }
 
                                                                     return (
-                                                                        <div style={{ position: 'relative', flex: 2 }}>
+                                                                        <div className="row-value-wrapper" style={{ position: 'relative' }}>
                                                                             <input
                                                                                 type={inputType}
                                                                                 className={`minimal-input row-value ${!isValid ? 'error' : ''}`}
@@ -559,12 +559,14 @@ export default function RuleBuilder({
                                                                         </div>
                                                                     );
                                                                 })()}
-                                                                <button
-                                                                    className="btn-icon danger"
-                                                                    onClick={() => removeNestedCondition(index, nestedIndex)}
-                                                                >
-                                                                    <Trash2 size={14} />
-                                                                </button>
+                                                                <div className="row-controls">
+                                                                    <button
+                                                                        className="btn-icon danger"
+                                                                        onClick={() => removeNestedCondition(index, nestedIndex)}
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         );
                                                     }))}

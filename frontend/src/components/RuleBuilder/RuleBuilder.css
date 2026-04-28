@@ -107,6 +107,7 @@
     padding: var(--space-md) var(--space-lg);
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--space-md);
     transition: all var(--transition-normal);
     position: relative;
@@ -119,28 +120,42 @@
 }
 
 .logic-row .row-fact {
-    flex: 1;
-    min-width: 150px;
+    flex: 1 1 180px;
+    min-width: 160px;
 }
 
 .logic-row .row-field {
-    flex: 1.5;
-    min-width: 120px;
+    flex: 1.5 1 220px;
+    min-width: 180px;
 }
 
 .logic-row .row-operator {
-    width: 180px;
-    flex-shrink: 0;
+    width: auto;
+    flex: 0.9 1 160px;
+    min-width: 140px;
 }
 
 .logic-row .row-value {
-    flex: 2;
-    min-width: 150px;
+    flex: 2 1 220px;
+    min-width: 180px;
+}
+
+.row-value-wrapper {
+    flex: 2 1 220px;
+    min-width: 180px;
+}
+
+.row-controls {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 /* Nested Condition Block */
 .nested-condition-block {
-    margin-left: var(--space-xl);
+    margin-left: var(--space-lg);
     margin-top: var(--space-md);
     padding: var(--space-md);
     background: var(--bg-secondary);
@@ -164,13 +179,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
     margin-bottom: var(--space-md);
     padding-bottom: var(--space-sm);
     border-bottom: 1px solid var(--border-color);
 }
 
 .nested-condition-header .minimal-select {
-    min-width: 150px;
+    min-width: 0;
+    width: min(100%, 320px);
+    flex: 1 1 220px;
     font-size: 0.8125rem;
     font-weight: 600;
 }
@@ -188,19 +207,24 @@
     padding: var(--space-sm) var(--space-md);
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--space-sm);
 }
 
 .nested-condition-row .row-field {
-    flex: 1.5;
+    flex: 1.5 1 180px;
+    min-width: 150px;
 }
 
 .nested-condition-row .row-operator {
-    width: 160px;
+    width: auto;
+    flex: 0.9 1 150px;
+    min-width: 130px;
 }
 
 .nested-condition-row .row-value {
-    flex: 2;
+    flex: 2 1 180px;
+    min-width: 150px;
 }
 
 /* ============================================
@@ -388,7 +412,6 @@
    ============================================ */
 @media (max-width: 1024px) {
     .logic-row {
-        flex-wrap: wrap;
         gap: var(--space-sm);
     }
     
@@ -397,7 +420,7 @@
     }
     
     .nested-condition-block {
-        margin-left: var(--space-md);
+        margin-left: var(--space-sm);
     }
 }
 
@@ -422,7 +445,27 @@
     
     .logic-row .row-field,
     .logic-row .row-operator,
-    .logic-row .row-value {
+    .logic-row .row-value,
+    .row-value-wrapper {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .logic-row .row-fact,
+    .nested-condition-row .row-field,
+    .nested-condition-row .row-operator,
+    .nested-condition-row .row-value {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .row-controls {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .nested-condition-header .minimal-select {
         width: 100%;
     }
     
