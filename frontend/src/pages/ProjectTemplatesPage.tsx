@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Plus, Layout, Trash2, ArrowRight, Box, FileText, Pencil } from 'lucide-react';
+import { Plus, Layout, Trash2, ArrowRight, Box, FileText, Pencil, Search } from 'lucide-react';
 import { projectApi } from '../services/api';
 import { RuleProject, Schema } from '../types';
 
@@ -22,6 +22,8 @@ export default function ProjectTemplatesPage() {
     const [newDesc, setNewDesc] = useState('');
     const [inputSchemaIds, setInputSchemaIds] = useState<number[]>([]);
     const [outputSchemaIds, setOutputSchemaIds] = useState<number[]>([]);
+    const [inputSchemaSearch, setInputSchemaSearch] = useState('');
+    const [outputSchemaSearch, setOutputSchemaSearch] = useState('');
     const [allowedOutputTypes, setAllowedOutputTypes] = useState<string[]>(['MODIFY', 'INSERT', 'LOG', 'WEBHOOK']);
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -81,6 +83,8 @@ export default function ProjectTemplatesPage() {
         setNewDesc('');
         setInputSchemaIds([]);
         setOutputSchemaIds([]);
+        setInputSchemaSearch('');
+        setOutputSchemaSearch('');
         setAllowedOutputTypes(['MODIFY', 'INSERT', 'LOG', 'WEBHOOK']);
     };
 
@@ -157,6 +161,13 @@ export default function ProjectTemplatesPage() {
         );
     }
 
+    const filteredInputSchemas = schemas.filter(schema =>
+        schema.name.toLowerCase().includes(inputSchemaSearch.toLowerCase())
+    );
+    const filteredOutputSchemas = schemas.filter(schema =>
+        schema.name.toLowerCase().includes(outputSchemaSearch.toLowerCase())
+    );
+
     return (
         <div>
             <div style={{
@@ -192,6 +203,25 @@ export default function ProjectTemplatesPage() {
                         </div>
                         <form onSubmit={handleCreate}>
                             <div className="modal-body">
+                                <div style={{
+                                    marginBottom: 'var(--space-md)',
+                                    padding: 'var(--space-md)',
+                                    borderRadius: 'var(--radius-md)',
+                                    border: '1px solid var(--border-color)',
+                                    background: 'var(--bg-secondary)',
+                                    display: 'grid',
+                                    gridTemplateColumns: '1fr auto 1fr',
+                                    alignItems: 'center',
+                                    gap: 'var(--space-md)'
+                                }}>
+                                    <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+                                        Input schemas selected: <strong style={{ color: 'var(--text-primary)' }}>{inputSchemaIds.length}</strong>
+                                    </div>
+                                    <ArrowRight size={16} style={{ color: 'var(--text-muted)' }} />
+                                    <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', textAlign: 'right' }}>
+                                        Output schemas selected: <strong style={{ color: 'var(--text-primary)' }}>{outputSchemaIds.length}</strong>
+                                    </div>
+                                </div>
                                 <div className="form-group">
                                     <label className="form-label">Template Name *</label>
                                     <input
@@ -214,70 +244,128 @@ export default function ProjectTemplatesPage() {
                                         rows={3}
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Input Schemas *</label>
-                                    <div style={{
-                                        maxHeight: '200px',
-                                        overflowY: 'auto',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: 'var(--radius-md)',
-                                        padding: 'var(--space-sm)'
-                                    }}>
-                                        {schemas.length === 0 ? (
-                                            <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-md)' }}>
-                                                No schemas available. Import schemas first.
-                                            </p>
-                                        ) : (
-                                            schemas.map(schema => (
-                                                <label key={schema.id} style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 'var(--space-sm)',
-                                                    padding: 'var(--space-xs)',
-                                                    cursor: 'pointer'
-                                                }}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={inputSchemaIds.includes(schema.id)}
-                                                        onChange={() => toggleInputSchema(schema.id)}
-                                                    />
-                                                    <span>{schema.name}</span>
-                                                </label>
-                                            ))
-                                        )}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }}>
+                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                        <label className="form-label">Input Schemas *</label>
+                                        <div style={{ position: 'relative', marginBottom: 'var(--space-sm)' }}>
+                                            <Search size={14} style={{
+                                                position: 'absolute',
+                                                left: '10px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                color: 'var(--text-muted)'
+                                            }} />
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={inputSchemaSearch}
+                                                onChange={e => setInputSchemaSearch(e.target.value)}
+                                                placeholder="Search input schemas..."
+                                                style={{ paddingLeft: '32px' }}
+                                            />
+                                        </div>
+                                        <div style={{
+                                            maxHeight: '220px',
+                                            overflowY: 'auto',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: 'var(--radius-md)',
+                                            background: 'var(--bg-secondary)',
+                                            padding: 'var(--space-xs)'
+                                        }}>
+                                            {schemas.length === 0 ? (
+                                                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-md)' }}>
+                                                    No schemas available. Import schemas first.
+                                                </p>
+                                            ) : filteredInputSchemas.length === 0 ? (
+                                                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-md)' }}>
+                                                    No matching schemas
+                                                </p>
+                                            ) : (
+                                                filteredInputSchemas.map(schema => {
+                                                    const selected = inputSchemaIds.includes(schema.id);
+                                                    return (
+                                                        <label key={schema.id} style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: 'var(--space-sm)',
+                                                            padding: 'var(--space-sm)',
+                                                            cursor: 'pointer',
+                                                            borderRadius: 'var(--radius-sm)',
+                                                            background: selected ? 'var(--accent-glow)' : 'transparent',
+                                                            border: `1px solid ${selected ? 'var(--primary-color)' : 'transparent'}`
+                                                        }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selected}
+                                                                onChange={() => toggleInputSchema(schema.id)}
+                                                            />
+                                                            <span style={{ fontSize: '0.875rem' }}>{schema.name}</span>
+                                                        </label>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Output Schemas *</label>
-                                    <div style={{
-                                        maxHeight: '200px',
-                                        overflowY: 'auto',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: 'var(--radius-md)',
-                                        padding: 'var(--space-sm)'
-                                    }}>
-                                        {schemas.length === 0 ? (
-                                            <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-md)' }}>
-                                                No schemas available. Import schemas first.
-                                            </p>
-                                        ) : (
-                                            schemas.map(schema => (
-                                                <label key={schema.id} style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 'var(--space-sm)',
-                                                    padding: 'var(--space-xs)',
-                                                    cursor: 'pointer'
-                                                }}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={outputSchemaIds.includes(schema.id)}
-                                                        onChange={() => toggleOutputSchema(schema.id)}
-                                                    />
-                                                    <span>{schema.name}</span>
-                                                </label>
-                                            ))
-                                        )}
+                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                        <label className="form-label">Output Schemas *</label>
+                                        <div style={{ position: 'relative', marginBottom: 'var(--space-sm)' }}>
+                                            <Search size={14} style={{
+                                                position: 'absolute',
+                                                left: '10px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                color: 'var(--text-muted)'
+                                            }} />
+                                            <input
+                                                type="text"
+                                                className="form-input"
+                                                value={outputSchemaSearch}
+                                                onChange={e => setOutputSchemaSearch(e.target.value)}
+                                                placeholder="Search output schemas..."
+                                                style={{ paddingLeft: '32px' }}
+                                            />
+                                        </div>
+                                        <div style={{
+                                            maxHeight: '220px',
+                                            overflowY: 'auto',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: 'var(--radius-md)',
+                                            background: 'var(--bg-secondary)',
+                                            padding: 'var(--space-xs)'
+                                        }}>
+                                            {schemas.length === 0 ? (
+                                                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-md)' }}>
+                                                    No schemas available. Import schemas first.
+                                                </p>
+                                            ) : filteredOutputSchemas.length === 0 ? (
+                                                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 'var(--space-md)' }}>
+                                                    No matching schemas
+                                                </p>
+                                            ) : (
+                                                filteredOutputSchemas.map(schema => {
+                                                    const selected = outputSchemaIds.includes(schema.id);
+                                                    return (
+                                                        <label key={schema.id} style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: 'var(--space-sm)',
+                                                            padding: 'var(--space-sm)',
+                                                            cursor: 'pointer',
+                                                            borderRadius: 'var(--radius-sm)',
+                                                            background: selected ? 'var(--accent-glow)' : 'transparent',
+                                                            border: `1px solid ${selected ? 'var(--primary-color)' : 'transparent'}`
+                                                        }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selected}
+                                                                onChange={() => toggleOutputSchema(schema.id)}
+                                                            />
+                                                            <span style={{ fontSize: '0.875rem' }}>{schema.name}</span>
+                                                        </label>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="form-group">
