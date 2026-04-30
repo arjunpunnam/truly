@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import { Settings, HelpCircle, Folder, Sparkles } from 'lucide-react';
+import { Settings, HelpCircle, Folder } from 'lucide-react';
 import TemplateDetailsPage from './pages/TemplateDetailsPage';
 import RulesPage from './pages/RulesPage';
 import ExecutePage from './pages/ExecutePage';
@@ -30,7 +30,7 @@ function App() {
                 <aside className="sidebar">
                     <div className="sidebar-header">
                         <div className="logo">
-                            <Sparkles size={24} className="logo-icon" />
+                            <img src="/brand/truly-logo.png" alt="Truly logo" className="logo-image" />
                             <span>Truly</span>
                         </div>
                         <p className="logo-tagline">Rule Orchestration</p>

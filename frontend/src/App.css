@@ -106,30 +106,6 @@
     text-align: center;
 }
 
-/* Logo */
-.logo {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: -0.02em;
-}
-
-.logo-icon {
-    color: #a5b4fc;
-}
-
-.logo-tagline {
-    font-size: 0.6875rem;
-    color: rgba(255, 255, 255, 0.4);
-    margin-top: 4px;
-    font-weight: 400;
-    letter-spacing: 0.02em;
-}
-
-/* Logo */
 .logo {
     display: flex;
     align-items: center;
@@ -138,11 +114,23 @@
     font-weight: 700;
     color: #ffffff;
     letter-spacing: -0.03em;
+    line-height: 1;
 }
 
-.logo-icon {
-    color: #a5b4fc;
-    /* Light indigo */
+.logo-image {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.logo-tagline {
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 4px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
 }
 
 /* Main Content Area */
