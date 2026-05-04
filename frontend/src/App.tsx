@@ -11,6 +11,8 @@ import ProjectSchemasPage from './pages/ProjectSchemasPage';
 import ProjectTemplatesPage from './pages/ProjectTemplatesPage';
 import ProjectAuditPage from './pages/ProjectAuditPage';
 import ProjectDashboardPage from './pages/ProjectDashboardPage';
+import SettingsPage from './pages/SettingsPage';
+import DocsPage from './pages/DocsPage';
 import { projectApi } from './services/api';
 import { RuleProject } from './types';
 import './App.css';
@@ -79,12 +81,15 @@ function App() {
                         <Routes>
                             <Route path="/" element={<ProjectsPage />} />
                             <Route path="/projects" element={<ProjectsPage />} />
+                            <Route path="/settings" element={<SettingsPage />} />
+                            <Route path="/help" element={<DocsPage />} />
                             <Route path="/projects/:projectId" element={<ProjectDetailPage />}>
                                 <Route index element={<ProjectOverviewPage />} />
                                 <Route path="schemas" element={<ProjectSchemasPage />} />
                                 <Route path="templates" element={<ProjectTemplatesPage />} />
                                 <Route path="templates/:templateId" element={<TemplateDetailsPage />} />
                                 <Route path="rules" element={<RulesPage />} />
+                                <Route path="playground" element={<ExecutePage />} />
                                 <Route path="execute" element={<ExecutePage />} />
                                 <Route path="dashboard" element={<ProjectDashboardPage />} />
                                 <Route path="audit" element={<ProjectAuditPage />} />

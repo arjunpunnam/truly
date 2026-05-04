@@ -30,8 +30,8 @@ export default function ProjectDetailPage() {
             setActiveTab('templates');
         } else if (path.includes('/rules')) {
             setActiveTab('rules');
-        } else if (path.includes('/execute')) {
-            setActiveTab('execute');
+        } else if (path.includes('/playground') || path.includes('/execute')) {
+            setActiveTab('playground');
         } else if (path.includes('/audit')) {
             setActiveTab('audit');
         } else if (path.includes('/dashboard')) {
@@ -58,7 +58,7 @@ export default function ProjectDetailPage() {
         { id: 'schemas', label: 'Schemas', icon: Database, path: '/schemas' },
         { id: 'templates', label: 'Templates', icon: Layout, path: '/templates' },
         { id: 'rules', label: 'Rules', icon: FileText, path: '/rules' },
-        { id: 'execute', label: 'Execute', icon: Play, path: '/execute' },
+        { id: 'playground', label: 'Playground', icon: Play, path: '/playground' },
         { id: 'dashboard', label: 'Dashboard', icon: Activity, path: '/dashboard' },
         { id: 'audit', label: 'Audit', icon: Clock, path: '/audit' },
     ];
@@ -150,4 +150,3 @@ export default function ProjectDetailPage() {
         </div>
     );
 }
-

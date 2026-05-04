@@ -279,8 +279,8 @@ export default function ExecutePage() {
         <div className="page animate-in">
             <div className="page-header">
                 <div>
-                    <h1>Rule Execution</h1>
-                    <p className="text-muted">Execute rules for a template with test data</p>
+                    <h1>Playground</h1>
+                    <p className="text-muted">Run templates with test data and inspect execution traces</p>
                 </div>
             </div>
 
