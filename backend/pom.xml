@@ -82,12 +82,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.dbeaver.jdbc.driver.libsql</groupId>
-            <artifactId>com.dbeaver.jdbc.driver.libsql</artifactId>
-            <version>1.0.5</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-community-dialects</artifactId>
         </dependency>
@@ -116,6 +110,20 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>turso-driver</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.dbeaver.jdbc.driver.libsql</groupId>
+                    <artifactId>com.dbeaver.jdbc.driver.libsql</artifactId>
+                    <version>1.0.5</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>

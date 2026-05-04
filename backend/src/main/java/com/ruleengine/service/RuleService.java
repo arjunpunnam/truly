@@ -232,7 +232,9 @@ public class RuleService {
         List<Rule> rules;
 
         if (request.getRuleIds() != null && !request.getRuleIds().isEmpty()) {
-            rules = ruleRepository.findAllById(request.getRuleIds());
+            rules = ruleRepository.findAllById(request.getRuleIds()).stream()
+                    .filter(Rule::isEnabled)
+                    .collect(Collectors.toList());
         } else if (request.getSchemaId() != null) {
             rules = ruleRepository.findActiveRulesBySchemaOrderByPriority(request.getSchemaId());
         } else {

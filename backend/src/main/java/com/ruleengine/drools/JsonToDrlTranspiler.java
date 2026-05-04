@@ -22,9 +22,6 @@ public class JsonToDrlTranspiler {
     private static final Logger log = LoggerFactory.getLogger(JsonToDrlTranspiler.class);
     private final ObjectMapper objectMapper;
 
-    // Thread-local storage for current fact type during rule generation
-    private String currentFactType = null;
-
     public JsonToDrlTranspiler(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
@@ -140,7 +137,7 @@ public class JsonToDrlTranspiler {
         drl.append("    then\n");
 
         // Generate RHS (actions)
-        String rhs = generateRHS(rule.getActions());
+        String rhs = generateRHS(rule.getActions(), factClassName);
         drl.append(rhs);
 
         drl.append("end\n");
@@ -159,10 +156,8 @@ public class JsonToDrlTranspiler {
         lhs.append("            factType == \"").append(factClassName).append("\"");
 
         if (conditions != null && conditions.getConditions() != null && !conditions.getConditions().isEmpty()) {
-            // Store fact class name for path sanitization
-            this.currentFactType = factClassName;
             List<String> conditionStrings = conditions.getConditions().stream()
-                    .map(this::generateCondition)
+                    .map(condition -> generateCondition(condition, factClassName))
                     .filter(s -> s != null && !s.isEmpty())
                     .collect(Collectors.toList());
 
@@ -170,7 +165,6 @@ public class JsonToDrlTranspiler {
                 lhs.append(",\n            ");
                 lhs.append(String.join(",\n            ", conditionStrings));
             }
-            this.currentFactType = null;
         }
 
         lhs.append("\n        )\n");
@@ -181,14 +175,14 @@ public class JsonToDrlTranspiler {
     /**
      * Generate a single condition expression.
      */
-    private String generateCondition(Condition condition) {
+    private String generateCondition(Condition condition, String factClassName) {
         if (condition == null) {
             return null;
         }
 
         // Handle nested condition groups
         if (condition.getNested() != null) {
-            return generateNestedCondition(condition.getNested());
+            return generateNestedCondition(condition.getNested(), factClassName);
         }
 
         String fact = condition.getFact();
@@ -200,8 +194,8 @@ public class JsonToDrlTranspiler {
         }
 
         // Sanitize path - remove fact type prefix if present (e.g., "Order.id" -> "id")
-        log.info("Before sanitization - fact: '{}', currentFactType: '{}'", fact, currentFactType);
-        String sanitizedPath = sanitizePath(fact);
+        log.info("Before sanitization - fact: '{}', factClassName: '{}'", fact, factClassName);
+        String sanitizedPath = sanitizePath(fact, factClassName);
         log.info("After sanitization - original: '{}', sanitized: '{}'", fact, sanitizedPath);
 
         // AGGRESSIVE FIX: Force sanitization if path still contains the fact type
@@ -210,10 +204,10 @@ public class JsonToDrlTranspiler {
         if (sanitizedPath.equals(fact) && fact.contains(".")) {
             String[] pathParts = fact.split("\\.");
             if (pathParts.length > 1) {
-                // If currentFactType is set and matches first part, remove it
-                if (currentFactType != null && pathParts[0].equals(currentFactType)) {
-                    sanitizedPath = fact.substring(currentFactType.length() + 1);
-                    log.warn("FORCE sanitized path '{}' to '{}' (currentFactType match)", fact, sanitizedPath);
+                // If the request fact type matches first part, remove it
+                if (factClassName != null && pathParts[0].equals(factClassName)) {
+                    sanitizedPath = fact.substring(factClassName.length() + 1);
+                    log.warn("FORCE sanitized path '{}' to '{}' (factClassName match)", fact, sanitizedPath);
                 }
                 // Otherwise, if first part is capitalized (looks like a type name), remove it
                 else if (pathParts[0] != null && !pathParts[0].isEmpty() &&
@@ -243,7 +237,7 @@ public class JsonToDrlTranspiler {
         // Generate value expression
         String valueExpr;
         if (condition.isValueIsField()) {
-            String fieldPath = sanitizePath(String.valueOf(value));
+            String fieldPath = sanitizePath(String.valueOf(value), factClassName);
             valueExpr = String.format("getValue(\"%s\")", fieldPath);
         } else {
             valueExpr = formatValue(value);
@@ -286,18 +280,18 @@ public class JsonToDrlTranspiler {
      * Sanitize path by removing fact type prefix if present.
      * Example: "Order.id" -> "id", "Customer.address.city" -> "address.city"
      */
-    private String sanitizePath(String path) {
+    private String sanitizePath(String path, String factClassName) {
         if (path == null || path.isEmpty()) {
             return path;
         }
 
-        // First, try to match with current fact type (most accurate)
-        if (currentFactType != null && !currentFactType.isEmpty()) {
-            String factTypePrefix = currentFactType + ".";
+        // First, try to match with the request fact type (most accurate)
+        if (factClassName != null && !factClassName.isEmpty()) {
+            String factTypePrefix = factClassName + ".";
             if (path.startsWith(factTypePrefix)) {
                 // Remove fact type prefix (e.g., "Order.id" -> "id")
                 String sanitized = path.substring(factTypePrefix.length());
-                log.info("Sanitized path '{}' to '{}' using factType '{}'", path, sanitized, currentFactType);
+                log.info("Sanitized path '{}' to '{}' using factType '{}'", path, sanitized, factClassName);
                 return sanitized;
             }
             // Also try case-insensitive match
@@ -306,14 +300,14 @@ public class JsonToDrlTranspiler {
                     path.substring(0, factTypePrefix.length()).toLowerCase().equals(factTypePrefixLower)) {
                 String sanitized = path.substring(factTypePrefix.length());
                 log.info("Sanitized path '{}' to '{}' using case-insensitive factType '{}'", path, sanitized,
-                        currentFactType);
+                        factClassName);
                 return sanitized;
             }
         }
 
         // Fallback: ALWAYS check for capitalized prefix patterns (runs even if
-        // currentFactType didn't match)
-        // This ensures we catch cases like "Order.id" even if currentFactType is null
+        // factClassName didn't match)
+        // This ensures we catch cases like "Order.id" even if factClassName is null
         // or different
         String[] parts = path.split("\\.");
         if (parts.length > 1 && parts[0] != null && !parts[0].isEmpty()) {
@@ -329,13 +323,13 @@ public class JsonToDrlTranspiler {
                 // and the user can always use the correct path without the type prefix
                 String sanitized = path.substring(firstPart.length() + 1);
                 log.info(
-                        "Sanitized path '{}' to '{}' by removing capitalized prefix '{}' (fallback, currentFactType: {})",
-                        path, sanitized, firstPart, currentFactType);
+                        "Sanitized path '{}' to '{}' by removing capitalized prefix '{}' (fallback, factClassName: {})",
+                        path, sanitized, firstPart, factClassName);
                 return sanitized;
             }
         }
 
-        log.warn("Path '{}' was not sanitized (currentFactType: {})", path, currentFactType);
+        log.warn("Path '{}' was not sanitized (factClassName: {})", path, factClassName);
         return path;
     }
 
@@ -404,7 +398,7 @@ public class JsonToDrlTranspiler {
     /**
      * Generate a nested condition group.
      */
-    private String generateNestedCondition(ConditionGroup group) {
+    private String generateNestedCondition(ConditionGroup group, String factClassName) {
         if (group.getConditions() == null || group.getConditions().isEmpty()) {
             return null;
         }
@@ -412,7 +406,7 @@ public class JsonToDrlTranspiler {
         String joiner = "all".equalsIgnoreCase(group.getOperator()) ? " && " : " || ";
 
         List<String> conditions = group.getConditions().stream()
-                .map(this::generateCondition)
+                .map(condition -> generateCondition(condition, factClassName))
                 .filter(s -> s != null && !s.isEmpty())
                 .collect(Collectors.toList());
 
@@ -426,7 +420,7 @@ public class JsonToDrlTranspiler {
     /**
      * Generate the Right-Hand Side (actions) of the rule.
      */
-    private String generateRHS(List<RuleAction> actions) {
+    private String generateRHS(List<RuleAction> actions, String factClassName) {
         if (actions == null || actions.isEmpty()) {
             return "        // No actions defined\n";
         }
@@ -436,7 +430,7 @@ public class JsonToDrlTranspiler {
         for (RuleAction action : actions) {
             switch (action.getType().toUpperCase()) {
                 case "MODIFY":
-                    rhs.append(generateModifyAction(action));
+                    rhs.append(generateModifyAction(action, factClassName));
                     break;
                 case "INSERT":
                     rhs.append(generateInsertAction(action));
@@ -458,8 +452,8 @@ public class JsonToDrlTranspiler {
         return rhs.toString();
     }
 
-    private String generateModifyAction(RuleAction action) {
-        String sanitizedPath = sanitizePath(action.getTargetField());
+    private String generateModifyAction(RuleAction action, String factClassName) {
+        String sanitizedPath = sanitizePath(action.getTargetField(), factClassName);
         return String.format("        modify($fact) { setValue(\"%s\", %s) };\n",
                 sanitizedPath, formatValue(action.getValue()));
     }

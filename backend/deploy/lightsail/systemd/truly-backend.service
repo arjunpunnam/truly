@@ -1,0 +1,18 @@
+[Unit]
+Description=Truly Rule Engine Backend
+After=network.target
+
+[Service]
+Type=simple
+User=truly
+Group=truly
+WorkingDirectory=/opt/truly/backend
+EnvironmentFile=/etc/truly/backend.env
+ExecStart=/usr/bin/bash -lc 'exec /usr/bin/java $JAVA_OPTS -jar /opt/truly/backend/app.jar'
+SuccessExitStatus=143
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
